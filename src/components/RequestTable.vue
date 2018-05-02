@@ -1,31 +1,46 @@
 
 <template>
     <table>
-        <tbody>
-            <tr v-for="r in requests" :key="r.id">
-                <td>{{r.status}}</td>
+        <thead>
+            <tr>
+                <th>Request</th>
+                <th>Submitted</th>
+                <th>Status</th>
             </tr>
+        </thead>
+        <tbody>
+            <request-table-row 
+                v-for="req in requests" 
+                :key="req.requestId" 
+                v-bind:request="req" /> 
         </tbody>
     </table>
 </template>
 
 <script>
+    import RequestTableRow from './RequestTableRow.vue';
+
     export default {
         name: 'RequestTable',
+        components: {
+            RequestTableRow
+        },
         data() {
             return {
-                requests: [
-                    {
-                        id: 'a',
-                        status: 'A'
-                    },
-                    {
-                        id: 'b',
-                        status: 'B'
-                    }
-                ]
+                requests: []
             };
         },
-
+        async created() {
+            const response = await fetch('https://fipc0nsvhg.execute-api.us-east-1.amazonaws.com/Prod/requests');
+            if (response.ok) {
+                this.requests = await response.json();
+            }
+        }
     }
 </script>
+
+<style scoped>
+    table {
+        width: 100%;
+    }
+</style>
